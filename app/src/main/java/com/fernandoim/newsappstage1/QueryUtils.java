@@ -28,10 +28,7 @@ public final class QueryUtils {
     public static List<News> fetchNewsData(String requestUrl) {
 
         URL url = createUrl(requestUrl);
-
         String jsonResponse = null;
-
-
 
         try {
             jsonResponse = makeHttpRequest(url);
@@ -40,12 +37,10 @@ public final class QueryUtils {
         }
 
         List<News> theNews = extractFeatureFromJson(jsonResponse);
-
         return theNews;
     }
 
     private static URL createUrl(String stringUrl) {
-
         URL url = null;
         try {
             url = new URL(stringUrl);
@@ -53,7 +48,6 @@ public final class QueryUtils {
             Log.e(LOG_TAG, "Problem bulding the URL", e);
         }
         return url;
-
     }
 
     private static String makeHttpRequest(URL url) throws IOException {
@@ -111,11 +105,11 @@ public final class QueryUtils {
 
     private static List<News> extractFeatureFromJson(String newsJSON){
 
-        List<News> newsList = new ArrayList<>();
-
         if (TextUtils.isEmpty(newsJSON)){
             return null;
         }
+
+        List<News> theNews = new ArrayList<>();
 
         try {
             JSONObject baseJsonResponse = new JSONObject(newsJSON);
@@ -128,29 +122,26 @@ public final class QueryUtils {
                 String title = currentNews.getString("webTitle");
                 String section = currentNews.getString("sectionName");
                 String url = currentNews.getString("webUrl");
+                String date = currentNews.getString("webPublicationDate");
                 JSONArray tags = currentNews.getJSONArray("tags");
-
                 String contributor = null;
 
                 if (tags.length() == 1) {
                     JSONObject contributorTag = (JSONObject) tags.get(0);
                     contributor = contributorTag.getString("webTitle");
+                }else {
+                    contributor = "unknown author";
                 }
-                News theNews = new News(title, section, url, contributor);
-                newsList.add(theNews);
+                News news = new News(title, section, url, contributor, date);
+                theNews.add(news);
             }
 
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", "Problem parsing the News JSON results", e);
         }
-
-        List<News> theNews = new ArrayList<>();
         return theNews;
-
-
     }
-
 }
